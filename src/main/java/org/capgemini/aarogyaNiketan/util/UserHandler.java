@@ -1,4 +1,4 @@
-package org.capgemini.aarogyaNiketan.service;
+package org.capgemini.aarogyaNiketan.util;
 
 import org.capgemini.aarogyaNiketan.Repository.UserRepository;
 import org.capgemini.aarogyaNiketan.model.MyUserDetails;
@@ -16,7 +16,7 @@ public class UserHandler{
     @Autowired
     UserRepository userRepository;
 
-    User getUserId(){
+    public User getLoggedInUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails userDetails = (MyUserDetails)auth.getPrincipal();
         Optional<User> user = userRepository.findByUserName(userDetails.getUsername());

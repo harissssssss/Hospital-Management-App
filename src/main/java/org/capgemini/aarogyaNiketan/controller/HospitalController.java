@@ -1,15 +1,19 @@
 package org.capgemini.aarogyaNiketan.controller;
 
 import org.capgemini.aarogyaNiketan.dto.request.HospitalPostRequest;
+import org.capgemini.aarogyaNiketan.dto.response.HospitalPostResponse;
+import org.capgemini.aarogyaNiketan.dto.response.ServicesPostResponse;
 import org.capgemini.aarogyaNiketan.model.Hospital;
+import org.capgemini.aarogyaNiketan.model.Services;
 import org.capgemini.aarogyaNiketan.service.HospitalService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class HospitalController {
@@ -18,15 +22,39 @@ public class HospitalController {
     private HospitalService hospitalService;
 
     @PostMapping(path = "/v1/hospital")
-    public ResponseEntity<String> create(@RequestBody HospitalPostRequest hospitalPostRequest){
+    public ResponseEntity<HospitalPostResponse> create(@RequestBody HospitalPostRequest hospitalPostRequest) throws Exception {
         Hospital hospital = hospitalService.create(hospitalPostRequest);
-
-        return new ResponseEntity<String>("", HttpStatus.OK);
+        HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
+        BeanUtils.copyProperties(hospital, hospitalPostResponse);
+        List<ServicesPostResponse> servicesPostResponses = new ArrayList<>();
+        for (Services services : hospital.getServices()) {
+            ServicesPostResponse s =  new ServicesPostResponse();
+            BeanUtils.copyProperties(services, s);
+            servicesPostResponses.add(s);
+        }
+        hospitalPostResponse.setServices(servicesPostResponses);
+        return new ResponseEntity<>(hospitalPostResponse, HttpStatus.OK);
     }
 
     @GetMapping(path = "/v1/hospital/{hospitalId}")
-    public ResponseEntity<String> get(Long hospitalId){
-        return new ResponseEntity<String>("", HttpStatus.OK);
+    public ResponseEntity<HospitalPostResponse> get(@PathVariable Long hospitalId) throws Exception {
+        Hospital hospital = hospitalService.get(hospitalId);
+        HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
+        BeanUtils.copyProperties(hospital, hospitalPostResponse);
+        List<ServicesPostResponse> servicesPostResponses = new ArrayList<>();
+        for (Services services : hospital.getServices()) {
+            ServicesPostResponse s =  new ServicesPostResponse();
+            BeanUtils.copyProperties(services, s);
+            servicesPostResponses.add(s);
+        }
+        hospitalPostResponse.setServices(servicesPostResponses);
+        return new ResponseEntity<>(hospitalPostResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/v1/hospital")
+    public ResponseEntity<List<Hospital>> getAll(Long userId) throws Exception {
+        List<Hospital> hospital = hospitalService.getAll(userId);
+        return new ResponseEntity<>(hospital, HttpStatus.OK);
     }
 
 }

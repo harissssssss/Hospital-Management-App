@@ -4,18 +4,22 @@ package org.capgemini.aarogyaNiketan.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.capgemini.aarogyaNiketan.Repository.UserRepository;
+import org.capgemini.aarogyaNiketan.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
 public class JwtUtil {
 
-    private String SECRET_KEY = "secret";
+    @Autowired
+    UserRepository userRepository;
+
+    private final String SECRET_KEY = "saEfhiASrv235msv34@#%v3fadQ$#%F24wdf3352efSDF@#F3f";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,6 +43,8 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        Optional<User> user = userRepository.findByUserName(userDetails.getUsername());
+        user.ifPresent(value -> claims.put("Roles", value.getRoles()));
         return createToken(claims, userDetails.getUsername());
     }
 

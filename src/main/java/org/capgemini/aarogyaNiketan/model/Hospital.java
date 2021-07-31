@@ -14,7 +14,7 @@ public class Hospital {
     private Long id;
     private String name;
     private String location;
-    private Long user_id;
+    private Long userId;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="hospital_id")
