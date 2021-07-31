@@ -4,9 +4,8 @@ spring:
   application:
     name: aarogyaniketan
   datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:mysql://localhost:5432/aarogyaniketan
-    username: root
+    url: jdbc:postgresql://localhost:5432/cmt
+    username: postgres
     pasword: password
   jpa:
     hibernate:
