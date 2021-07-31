@@ -4,8 +4,8 @@ spring:
   application:
     name: aarogyaniketan
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/aarogyaniketan
+    driverClassName: org.postgresql.Driver
+    url: jdbc:mysql://localhost:5432/aarogyaniketan
     username: root
     pasword: password
   jpa:
@@ -15,4 +15,4 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
