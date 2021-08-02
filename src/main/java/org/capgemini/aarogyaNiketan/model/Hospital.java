@@ -16,7 +16,7 @@ public class Hospital {
     private String location;
     private Long userId;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch =FetchType.EAGER ,cascade = CascadeType.ALL)
     @JoinColumn(name="hospital_id")
     private List<Services> services;
 }

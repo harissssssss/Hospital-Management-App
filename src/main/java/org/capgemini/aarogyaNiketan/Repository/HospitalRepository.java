@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HospitalRepository extends JpaRepository<Hospital, Long>{
     List<Hospital> findAllByUserId(Long userId);
+    List<Hospital> findAllByLocation(String location);
 }

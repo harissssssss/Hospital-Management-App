@@ -10,4 +10,5 @@ public interface HospitalService {
     Hospital get(Long id) throws Exception;
     Hospital update(Hospital hospital,Long id);
     List<Hospital> getAll(Long userId) throws Exception;
+    List<Hospital> getAllByLocation(String location) throws Exception;
 }

@@ -38,7 +38,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/register", "/login").permitAll()
                 .antMatchers("/v1/").authenticated()
-                .antMatchers("/patient").hasRole("PATIENT")
+                .antMatchers("/v1/order").hasRole("PATIENT")
                 .and()
                 .exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

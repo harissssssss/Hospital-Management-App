@@ -68,4 +68,14 @@ public class HospitalServiceImpl implements HospitalService {
             throw new Exception("No such data present");
         }
     }
+
+    @Override
+    public List<Hospital> getAllByLocation(String location) throws Exception {
+        List<Hospital> hospital = hospitalRepository.findAllByLocation(location);
+        if (!hospital.isEmpty()) {
+            return hospital;
+        } else {
+            throw new Exception("No such data present");
+        }
+    }
 }

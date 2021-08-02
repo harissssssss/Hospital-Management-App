@@ -52,8 +52,19 @@ public class HospitalController {
     }
 
     @GetMapping(path = "/v1/hospital")
-    public ResponseEntity<List<Hospital>> getAll(Long userId) throws Exception {
-        List<Hospital> hospital = hospitalService.getAll(userId);
+    public ResponseEntity<List<Hospital>> getAll(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) String location) throws Exception {
+
+        List<Hospital> hospital = new ArrayList<>();
+
+        if(userId!=null){
+            hospital = hospitalService.getAll(userId);
+        }
+        if(location!=null){
+            hospital = hospitalService.getAllByLocation(location);
+        }
+
         return new ResponseEntity<>(hospital, HttpStatus.OK);
     }
 
