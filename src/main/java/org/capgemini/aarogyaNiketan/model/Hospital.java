@@ -1,8 +1,11 @@
 package org.capgemini.aarogyaNiketan.model;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
@@ -19,4 +22,11 @@ public class Hospital {
     @OneToMany(fetch =FetchType.EAGER ,cascade = CascadeType.ALL)
     @JoinColumn(name="hospital_id")
     private List<Services> services;
+
+    @Column(updatable = false)
+    @CreationTimestamp
+    private ZonedDateTime createdAt;
+
+    @UpdateTimestamp
+    private ZonedDateTime updatedAt;
 }

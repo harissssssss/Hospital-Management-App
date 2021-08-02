@@ -1,9 +1,15 @@
 package org.capgemini.aarogyaNiketan.service.impl;
 
 import org.capgemini.aarogyaNiketan.Repository.HospitalRepository;
+import org.capgemini.aarogyaNiketan.Repository.OrderRepository;
+import org.capgemini.aarogyaNiketan.dto.request.HospitalPatchRequest;
 import org.capgemini.aarogyaNiketan.dto.request.HospitalPostRequest;
 import org.capgemini.aarogyaNiketan.dto.request.ServicesPostRequest;
+import org.capgemini.aarogyaNiketan.dto.response.ApprovalsResponse;
+import org.capgemini.aarogyaNiketan.dto.response.HospitalPostResponse;
+import org.capgemini.aarogyaNiketan.dto.response.ServicesPostResponse;
 import org.capgemini.aarogyaNiketan.model.Hospital;
+import org.capgemini.aarogyaNiketan.model.Order;
 import org.capgemini.aarogyaNiketan.model.Services;
 import org.capgemini.aarogyaNiketan.model.User;
 import org.capgemini.aarogyaNiketan.service.HospitalService;
@@ -15,12 +21,16 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HospitalServiceImpl implements HospitalService {
 
     @Autowired
     private HospitalRepository hospitalRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
 
     @Autowired
     UserHandler userHandler;
@@ -55,7 +65,13 @@ public class HospitalServiceImpl implements HospitalService {
     }
 
     @Override
-    public Hospital update(Hospital hospital, Long id) {
+    public Hospital update(HospitalPatchRequest hospitalPatchRequest) {
+        Optional<Hospital> hospitalOptional = hospitalRepository.findById(hospitalPatchRequest.getId());
+        if(hospitalOptional.isPresent()){
+            Hospital hospital = hospitalOptional.get();
+            BeanUtils.copyProperties(hospitalPatchRequest, hospital);
+            hospitalRepository.save(hospital);
+        }
         return null;
     }
 
@@ -77,5 +93,31 @@ public class HospitalServiceImpl implements HospitalService {
         } else {
             throw new Exception("No such data present");
         }
+    }
+
+    @Override
+    public List<ApprovalsResponse> getAllApprovals() throws Exception {
+        Long userId = userHandler.getLoggedInUser().getId();
+        List<Hospital> hospital = hospitalRepository.findAllByUserId(userId);
+        List<Long> hospitalId = hospital.stream().map(Hospital::getId).collect(Collectors.toList());
+        List<Order> orders = orderRepository.findAllByHospitalIdInAndApprove(hospitalId, false);
+        List<ApprovalsResponse> approvalsResponses = new ArrayList<>();
+        for (Order o: orders){
+            ApprovalsResponse approvalsResponse = new ApprovalsResponse();
+
+            HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
+            BeanUtils.copyProperties(o.getHospital(), hospitalPostResponse);
+
+            ServicesPostResponse servicesPostResponse = new ServicesPostResponse();
+            BeanUtils.copyProperties(o.getServices(), servicesPostResponse);
+
+            approvalsResponse.setHospital(hospitalPostResponse);
+            approvalsResponse.setServices(servicesPostResponse);
+
+            BeanUtils.copyProperties(o, approvalsResponse);
+
+            approvalsResponses.add(approvalsResponse);
+        }
+        return approvalsResponses;
     }
 }

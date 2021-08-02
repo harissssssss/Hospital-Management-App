@@ -40,10 +40,10 @@ public class OrderController {
     }
 
     @GetMapping(path = "/v1/order")
-    public ResponseEntity< List<OrderPostResponse>> get(@RequestParam Long userId) throws Exception {
-        List<Order> order = orderService.get(userId);
+    public ResponseEntity<List<OrderPostResponse>> getAllByUserId(@RequestParam Long userId) throws Exception {
+        List<Order> order = orderService.getByUserId(userId);
         List<OrderPostResponse> orderPostResponse = new ArrayList<>();
-        for (Order o: order) {
+        for (Order o : order) {
             HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
             BeanUtils.copyProperties(o.getHospital(), hospitalPostResponse);
 
@@ -58,6 +58,30 @@ public class OrderController {
         }
 
         return new ResponseEntity<>(orderPostResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "/v1/order/{orderId}")
+    public ResponseEntity<OrderPostResponse> get(@PathVariable Long orderId) throws Exception {
+        Order order = orderService.get(orderId);
+
+        HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
+        BeanUtils.copyProperties(order.getHospital(), hospitalPostResponse);
+
+        ServicesPostResponse servicesPostResponse = new ServicesPostResponse();
+        BeanUtils.copyProperties(order.getServices(), servicesPostResponse);
+
+        OrderPostResponse orderPostResponse = new OrderPostResponse();
+        orderPostResponse.setHospital(hospitalPostResponse);
+        orderPostResponse.setServices(servicesPostResponse);
+        BeanUtils.copyProperties(order, orderPostResponse);
+
+        return new ResponseEntity<>(orderPostResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/v1/order/approve")
+    public ResponseEntity<Void> approveOrder(@RequestParam Long orderId) throws Exception {
+        orderService.approveOrder(orderId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

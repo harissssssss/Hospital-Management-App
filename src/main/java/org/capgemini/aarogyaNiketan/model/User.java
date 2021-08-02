@@ -1,14 +1,15 @@
 package org.capgemini.aarogyaNiketan.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "Users")
 @Data
-@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,6 +18,13 @@ public class User {
     private String password;
     private Boolean active;
     private String roles;
+
+    @Column(updatable = false)
+    @CreationTimestamp
+    private ZonedDateTime createdAt;
+
+    @UpdateTimestamp
+    private ZonedDateTime updatedAt;
 
     public boolean isActive() {
         return active;

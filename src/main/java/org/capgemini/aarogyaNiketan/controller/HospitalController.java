@@ -1,6 +1,8 @@
 package org.capgemini.aarogyaNiketan.controller;
 
+import org.capgemini.aarogyaNiketan.dto.request.HospitalPatchRequest;
 import org.capgemini.aarogyaNiketan.dto.request.HospitalPostRequest;
+import org.capgemini.aarogyaNiketan.dto.response.ApprovalsResponse;
 import org.capgemini.aarogyaNiketan.dto.response.HospitalPostResponse;
 import org.capgemini.aarogyaNiketan.dto.response.ServicesPostResponse;
 import org.capgemini.aarogyaNiketan.model.Hospital;
@@ -28,7 +30,22 @@ public class HospitalController {
         BeanUtils.copyProperties(hospital, hospitalPostResponse);
         List<ServicesPostResponse> servicesPostResponses = new ArrayList<>();
         for (Services services : hospital.getServices()) {
-            ServicesPostResponse s =  new ServicesPostResponse();
+            ServicesPostResponse s = new ServicesPostResponse();
+            BeanUtils.copyProperties(services, s);
+            servicesPostResponses.add(s);
+        }
+        hospitalPostResponse.setServices(servicesPostResponses);
+        return new ResponseEntity<>(hospitalPostResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/v1/hospital")
+    public ResponseEntity<HospitalPostResponse> edit(@RequestBody HospitalPatchRequest hospitalPatchRequest) throws Exception {
+        Hospital hospital = hospitalService.update(hospitalPatchRequest);
+        HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
+        BeanUtils.copyProperties(hospital, hospitalPostResponse);
+        List<ServicesPostResponse> servicesPostResponses = new ArrayList<>();
+        for (Services services : hospital.getServices()) {
+            ServicesPostResponse s = new ServicesPostResponse();
             BeanUtils.copyProperties(services, s);
             servicesPostResponses.add(s);
         }
@@ -43,7 +60,7 @@ public class HospitalController {
         BeanUtils.copyProperties(hospital, hospitalPostResponse);
         List<ServicesPostResponse> servicesPostResponses = new ArrayList<>();
         for (Services services : hospital.getServices()) {
-            ServicesPostResponse s =  new ServicesPostResponse();
+            ServicesPostResponse s = new ServicesPostResponse();
             BeanUtils.copyProperties(services, s);
             servicesPostResponses.add(s);
         }
@@ -53,19 +70,33 @@ public class HospitalController {
 
     @GetMapping(path = "/v1/hospital")
     public ResponseEntity<List<Hospital>> getAll(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) String location) throws Exception {
+            @RequestParam(required = false) Long userId) throws Exception {
 
         List<Hospital> hospital = new ArrayList<>();
 
-        if(userId!=null){
+        if (userId != null) {
             hospital = hospitalService.getAll(userId);
         }
-        if(location!=null){
+
+        return new ResponseEntity<>(hospital, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/v1/hospital/location")
+    public ResponseEntity<List<Hospital>> getAllByLocation(
+            @RequestParam String location) throws Exception {
+
+        List<Hospital> hospital = new ArrayList<>();
+
+        if (location != null) {
             hospital = hospitalService.getAllByLocation(location);
         }
 
         return new ResponseEntity<>(hospital, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/v1/hospital/approvals")
+    public ResponseEntity<List<ApprovalsResponse>> getAllApprovals() throws Exception {
+        List<ApprovalsResponse> approvals = hospitalService.getAllApprovals();
+        return new ResponseEntity<>(approvals, HttpStatus.OK);
+    }
 }

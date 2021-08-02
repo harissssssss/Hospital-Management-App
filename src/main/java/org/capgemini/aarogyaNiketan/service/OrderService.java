@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface OrderService {
     Order create(OrderPostRequest orderPostRequest) throws Exception;
-    List<Order> get(Long userId) throws Exception;
+    List<Order> getByUserId(Long userId) throws Exception;
+    Order get(Long orderId) throws Exception;
+    void approveOrder(Long orderId) throws Exception;
 }

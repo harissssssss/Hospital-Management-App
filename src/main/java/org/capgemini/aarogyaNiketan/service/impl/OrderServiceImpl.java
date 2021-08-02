@@ -8,11 +8,14 @@ import org.capgemini.aarogyaNiketan.model.Hospital;
 import org.capgemini.aarogyaNiketan.model.Order;
 import org.capgemini.aarogyaNiketan.model.Services;
 import org.capgemini.aarogyaNiketan.service.OrderService;
+import org.capgemini.aarogyaNiketan.util.UserHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -26,6 +29,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     ServiceRepository serviceRepository;
 
+    @Autowired
+    UserHandler userHandler;
+
     @Override
     public Order create(OrderPostRequest orderPostRequest) throws Exception {
         Order order = new Order();
@@ -38,7 +44,36 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> get(Long userId) throws Exception {
+    public List<Order> getByUserId(Long userId) throws Exception {
         return orderRepository.findAllByUserId(userId);
     }
+
+    @Override
+    public Order get(Long orderId) throws Exception {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (!orderOptional.isPresent()) {
+            throw new Exception("No order present");
+        }
+        return orderOptional.get();
+    }
+
+    @Override
+    public void approveOrder(Long orderId) throws Exception {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        Order order = new Order();
+        if (orderOptional.isPresent()) {
+            order = orderOptional.get();
+            Hospital hospital = hospitalRepository.findByIdAndUserId(order.getHospital().getId(), userHandler.getLoggedInUser().getId());
+            if (hospital == null) {
+                throw new Exception("Permission Denied to approve this booking");
+            }
+        } else {
+            throw new Exception("No order found");
+        }
+        order.setApprove(Boolean.TRUE);
+        order.setApprovedAt(ZonedDateTime.now());
+        orderRepository.save(order);
+    }
+
+
 }
