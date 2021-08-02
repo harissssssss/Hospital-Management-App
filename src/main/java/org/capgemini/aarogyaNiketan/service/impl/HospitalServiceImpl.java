@@ -70,7 +70,7 @@ public class HospitalServiceImpl implements HospitalService {
         if(hospitalOptional.isPresent()){
             Hospital hospital = hospitalOptional.get();
             BeanUtils.copyProperties(hospitalPatchRequest, hospital);
-            hospitalRepository.save(hospital);
+            return hospitalRepository.save(hospital);
         }
         return null;
     }

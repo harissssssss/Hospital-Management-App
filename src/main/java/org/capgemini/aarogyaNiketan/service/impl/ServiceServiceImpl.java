@@ -22,7 +22,7 @@ public class ServiceServiceImpl implements ServiceService {
         if(servicesOptional.isPresent()){
             Services service = servicesOptional.get();
             BeanUtils.copyProperties(servicesPatchRequest, service);
-            serviceRepository.save(service);
+            return serviceRepository.save(service);
         }
         return null;
     }
