@@ -38,7 +38,7 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public Hospital create(HospitalPostRequest hospitalPostRequest) throws Exception {
         User user = userHandler.getLoggedInUser();
-        if (user == null || user.getId() == null){
+        if (user == null || user.getId() == null) {
             throw new Exception("Login to continue");
         }
         Hospital hospital = new Hospital();
@@ -65,14 +65,16 @@ public class HospitalServiceImpl implements HospitalService {
     }
 
     @Override
-    public Hospital update(HospitalPatchRequest hospitalPatchRequest) {
+    public Hospital update(HospitalPatchRequest hospitalPatchRequest) throws Exception {
         Optional<Hospital> hospitalOptional = hospitalRepository.findById(hospitalPatchRequest.getId());
-        if(hospitalOptional.isPresent()){
-            Hospital hospital = hospitalOptional.get();
-            BeanUtils.copyProperties(hospitalPatchRequest, hospital);
-            return hospitalRepository.save(hospital);
+        if (!hospitalOptional.isPresent()) {
+            throw new Exception("Data not found");
+        } else if (!hospitalOptional.get().getUserId().equals(userHandler.getLoggedInUser().getId())) {
+            throw new Exception("Permission denied to edit");
         }
-        return null;
+        Hospital hospital = hospitalOptional.get();
+        BeanUtils.copyProperties(hospitalPatchRequest, hospital);
+        return hospitalRepository.save(hospital);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class HospitalServiceImpl implements HospitalService {
         List<Long> hospitalId = hospital.stream().map(Hospital::getId).collect(Collectors.toList());
         List<Order> orders = orderRepository.findAllByHospitalIdInAndApprove(hospitalId, false);
         List<ApprovalsResponse> approvalsResponses = new ArrayList<>();
-        for (Order o: orders){
+        for (Order o : orders) {
             ApprovalsResponse approvalsResponse = new ApprovalsResponse();
 
             HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();

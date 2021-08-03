@@ -10,7 +10,7 @@ import java.util.List;
 public interface HospitalService {
     Hospital create(HospitalPostRequest hospital) throws Exception;
     Hospital get(Long id) throws Exception;
-    Hospital update(HospitalPatchRequest hospital);
+    Hospital update(HospitalPatchRequest hospital) throws Exception;
     List<Hospital> getAll(Long userId) throws Exception;
     List<Hospital> getAllByLocation(String location) throws Exception;
     List<ApprovalsResponse> getAllApprovals() throws Exception;
