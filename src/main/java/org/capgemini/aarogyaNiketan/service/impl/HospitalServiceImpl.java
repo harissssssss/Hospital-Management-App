@@ -47,10 +47,14 @@ public class HospitalServiceImpl implements HospitalService {
         List<Services> services = new ArrayList<>();
         for (ServicesPostRequest servicesPostRequest : hospitalPostRequest.getServices()) {
             Services s = new Services();
+            if (servicesPostRequest.getVacancy() < 0 || servicesPostRequest.getPrice() < 0) {
+                throw new Exception("Invalid details provided for the service : " + servicesPostRequest.getName());
+            }
             BeanUtils.copyProperties(servicesPostRequest, s);
             services.add(s);
         }
         hospital.setServices(services);
+        hospital.setLocation(hospital.getLocation().trim().toLowerCase());
         return hospitalRepository.save(hospital);
     }
 
@@ -89,7 +93,7 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public List<Hospital> getAllByLocation(String location) throws Exception {
-        List<Hospital> hospital = hospitalRepository.findAllByLocation(location);
+        List<Hospital> hospital = hospitalRepository.findAllByLocation(location.trim().toLowerCase());
         if (!hospital.isEmpty()) {
             return hospital;
         } else {

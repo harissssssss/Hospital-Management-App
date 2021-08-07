@@ -53,7 +53,7 @@ public class OrderController {
             OrderPostResponse orderResponse = new OrderPostResponse();
             orderResponse.setHospital(hospitalPostResponse);
             orderResponse.setServices(servicesPostResponse);
-            BeanUtils.copyProperties(o, order);
+            BeanUtils.copyProperties(o, orderResponse);
             orderPostResponse.add(orderResponse);
         }
 

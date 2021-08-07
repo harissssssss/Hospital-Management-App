@@ -38,6 +38,9 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(orderPostRequest, order);
         Hospital hospital = hospitalRepository.getById(orderPostRequest.getHospitalId());
         Services services = serviceRepository.getById(orderPostRequest.getServiceId());
+        if (order.getNoOfServices() < 0 || services.getVacancy() < order.getNoOfServices()) {
+            throw new Exception("Invalid number of bookings");
+        }
         order.setServices(services);
         order.setHospital(hospital);
         return orderRepository.save(order);
@@ -73,6 +76,10 @@ public class OrderServiceImpl implements OrderService {
         order.setApprove(Boolean.TRUE);
         order.setApprovedAt(ZonedDateTime.now());
         orderRepository.save(order);
+
+        Services services = order.getServices();
+        services.setVacancy(services.getVacancy() - order.getNoOfServices());
+        serviceRepository.save(services);
     }
 
 

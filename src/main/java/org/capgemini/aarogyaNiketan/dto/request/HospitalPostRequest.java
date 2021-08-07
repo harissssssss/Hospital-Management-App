@@ -8,5 +8,6 @@ import java.util.List;
 public class HospitalPostRequest {
     private String name;
     private String location;
+    private String type;
     private List<ServicesPostRequest> services;
 }

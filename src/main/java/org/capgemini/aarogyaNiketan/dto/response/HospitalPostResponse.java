@@ -11,5 +11,6 @@ public class HospitalPostResponse {
     private Long id;
     private String name;
     private String location;
+    private String type;
     private List<ServicesPostResponse> services;
 }

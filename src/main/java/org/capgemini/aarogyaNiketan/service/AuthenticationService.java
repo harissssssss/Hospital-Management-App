@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -27,10 +28,13 @@ public class AuthenticationService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public String register(@RequestBody AuthenticationRegisterRequest authenticationRequest) throws Exception {
         User user = new User();
         user.setUserName(authenticationRequest.getUsername());
-        user.setPassword(authenticationRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(authenticationRequest.getPassword()));
         user.setRoles(authenticationRequest.getUserType().toString());
         user.setActive(Boolean.TRUE);
         User savedUser = userRepository.save(user);
