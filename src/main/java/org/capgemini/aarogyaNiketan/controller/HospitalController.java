@@ -8,6 +8,7 @@ import org.capgemini.aarogyaNiketan.dto.response.ServicesPostResponse;
 import org.capgemini.aarogyaNiketan.model.Hospital;
 import org.capgemini.aarogyaNiketan.model.Services;
 import org.capgemini.aarogyaNiketan.service.HospitalService;
+import org.capgemini.aarogyaNiketan.util.UserHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ public class HospitalController {
 
     @Autowired
     private HospitalService hospitalService;
+
+    @Autowired
+    private UserHandler userHandler;
 
     @PostMapping(path = "/v1/hospital")
     public ResponseEntity<HospitalPostResponse> create(@RequestBody HospitalPostRequest hospitalPostRequest) throws Exception {
@@ -70,8 +74,8 @@ public class HospitalController {
     }
 
     @GetMapping(path = "/v1/hospital")
-    public ResponseEntity<List<Hospital>> getAll(
-            @RequestParam(required = false) Long userId) throws Exception {
+    public ResponseEntity<List<Hospital>> getAll() throws Exception {
+        Long userId = userHandler.getLoggedInUser().getId();
 
         List<Hospital> hospital = new ArrayList<>();
 
