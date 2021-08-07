@@ -6,6 +6,7 @@ import org.capgemini.aarogyaNiketan.dto.response.OrderPostResponse;
 import org.capgemini.aarogyaNiketan.dto.response.ServicesPostResponse;
 import org.capgemini.aarogyaNiketan.model.Order;
 import org.capgemini.aarogyaNiketan.service.OrderService;
+import org.capgemini.aarogyaNiketan.util.UserHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,9 @@ public class OrderController {
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    UserHandler userHandler;
 
     @PostMapping(path = "/v1/order")
     public ResponseEntity<OrderPostResponse> create(@RequestBody OrderPostRequest orderPostRequest) throws Exception {
@@ -41,8 +45,8 @@ public class OrderController {
     }
 
     @GetMapping(path = "/v1/order")
-    public ResponseEntity<List<OrderPostResponse>> getAllByUserId(@RequestParam Long userId) throws Exception {
-        List<Order> order = orderService.getByUserId(userId);
+    public ResponseEntity<List<OrderPostResponse>> getAllByUserId() throws Exception {
+        List<Order> order = orderService.getByUserId(userHandler.getLoggedInUser().getId());
         List<OrderPostResponse> orderPostResponse = new ArrayList<>();
         for (Order o : order) {
             HospitalPostResponse hospitalPostResponse = new HospitalPostResponse();
